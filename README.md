@@ -12,6 +12,6 @@ In this project we will learn how to create a very simple Web API using `Node.js
 
 - [X] fork and clone this repository.
 - [X] **CD into the folder** where you cloned **your fork**.
-- [ ] type `npm i` to download dependencies.
+- [x] type `npm i` to download dependencies.
 
 Please follow along as the instructor creates and adds `middleware` to the API step by step.

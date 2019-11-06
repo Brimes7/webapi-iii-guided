@@ -3,7 +3,60 @@ const express = require('express');
 const Hubs = require('./hubs-model.js');
 const Messages = require('../messages/messages-model.js');
 
-const router = express.Router();
+const router = express.Router();router.use((req, res, next) => {
+  console.log('SOMETHING CAME INTO THE HUBS ROUTER!!!!!!!!');
+  // next('I am being nasty and calling next with an argument!!!!!!!!');
+  // throw new Error('argghhh!!!!!')
+  next();
+})
+
+function checkThatReqHasBody(req, res, next) {
+  if (Object.keys(req.body).length) {
+    next();
+  } else {
+    res.status(400).json({ message: "Please provide a valid post to create" });
+  }
+}
+
+function checkThatBodyHasLegitName(req, res, next) {
+  // implement
+}
+
+// this middleware checks that the id param
+// can be parsed as a number, if so then proceed
+// otherwise send a good response to client
+function isValidParamId(req, res, next) {
+  const { id } = req.params;
+  if (parseInt(id) > 0) {
+    next();
+  } else {
+    res.status(400).json({ message: 'Hub id must be valid number' });
+  }
+}
+// custom middleware
+// takes req, res (as usual)
+// takes and additional parameter next (allows the request to proceed)
+// let's find the hub with the given id from params
+// if it's legit, we tack it to the req object and allow to proceed
+// otherwise we send the client a 404
+function checkHubsId(req, res, next) {
+  Hubs.findById(req.params.id)
+    .then(hub => {
+      if (hub) {
+        req.hub = hub;
+        next()
+      } else {
+        res.status(404).json({ message: 'Hub id does not correspond with an actual hub' });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: 'Something terrible happend while checking hub id: ' + error.message,
+      });
+    });
+}
+
+
 
 // this only runs if the url has /api/hubs in it
 router.get('/', (req, res) => {
